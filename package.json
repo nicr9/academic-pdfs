@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/nicr9/academic-pdfs/issues"
   },
-  "homepage": "https://github.com/nicr9/academic-pdfs#readme"
+  "homepage": "https://github.com/nicr9/academic-pdfs#readme",
+  "dependencies": {
+    "pdfjs-dist": "^2.4.456"
+  }
 }
