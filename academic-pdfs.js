@@ -11,17 +11,23 @@ var loadingTask = pdfjs.getDocument({
   cMapPacked: true,
 });
 
+var text_items = [];
+var fonts = {};
+var promises = [loadingTask.promise];
+
 loadingTask.promise
   .then(function (pdfDocument) {
     console.log("# PDF document loaded.");
 
     // Get the first page.
-    pdfDocument.getPage(1).then(function (page) {
+    p = pdfDocument.getPage(1);
+    promises.push(p);
+    p.then(function (page) {
       var viewport = page.getViewport({ scale: 1.0 });
 
       page.getTextContent().then(function(textContent) {
-        textContent.items.map(function(item) {
-          console.log(item);
+        promises.push(textContent.items.map(function(item) {
+          //console.log(item);
           const tx = pdfjs.Util.transform( // eslint-disable-line no-undef
             viewport.transform,
             item.transform
@@ -29,7 +35,7 @@ loadingTask.promise
 
           const fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]));
           const dividedHeight = item.height / fontHeight;
-          console.log({
+          text_items.push({
             x: Math.round(item.transform[4]),
             y: Math.round(item.transform[5]),
             width: Math.round(item.width),
@@ -37,7 +43,7 @@ loadingTask.promise
             text: item.str,
             font: item.fontName
           });
-        });
+        }));
       });
     });
   })
@@ -45,3 +51,10 @@ loadingTask.promise
     console.log(reason);
   });
 
+Promise.all(promises)
+  .then(function () {
+    text_items.filter(item => fonts[item.font] = 0);
+    text_items.filter(item => fonts[item.font]++);
+
+    console.log('Totals', fonts)
+  });
